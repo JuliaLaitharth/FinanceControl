@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id               Int       @id @default(autoincrement())
+  nome             String
+  email            String    @unique
+  senhaHash        String    @map("senha_hash")
+  biometriaAtiva   Boolean   @default(false) @map("biometria_ativa")
+  dataCadastro     DateTime  @default(now()) @map("data_cadastro")
+  ultimoLogin      DateTime? @map("ultimo_login")
+  tentativasFalhas Int       @default(0) @map("tentativas_falhas")
+  bloqueadoAte     DateTime? @map("bloqueado_ate")
+
+  tokens         TokenRecuperacao[]
+  vinculosAlexa  VinculoAlexa[]
+  consentimentos Consentimento[]
+  categorias     Categoria[]
+  regras         RegraAlerta[]
+  logs           LogAuditoria[]
+
+  @@map("usuario")
+}
+
+model TokenRecuperacao {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int      @map("usuario_id")
+  token     String   @unique
+  expiraEm  DateTime @map("expira_em")
+  usado     Boolean  @default(false)
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("token_recuperacao")
+}
+
+model VinculoAlexa {
+  id           Int      @id @default(autoincrement())
+  usuarioId    Int      @map("usuario_id")
+  alexaUserId  String   @map("alexa_user_id")
+  accessToken  String   @map("access_token")
+  refreshToken String   @map("refresh_token")
+  expiraEm     DateTime @map("expira_em")
+  ativo        Boolean  @default(true)
+  dataVinculo  DateTime @default(now()) @map("data_vinculo")
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("vinculo_alexa")
+}
+
+model Instituicao {
+  id             Int             @id @default(autoincrement())
+  nome           String
+  codigoPluggy   String          @map("codigo_pluggy")
+  logoUrl        String?         @map("logo_url")
+  consentimentos Consentimento[]
+
+  @@map("instituicao")
+}
+
+model Consentimento {
+  id                Int       @id @default(autoincrement())
+  usuarioId         Int       @map("usuario_id")
+  instituicaoId     Int       @map("instituicao_id")
+  itemIdPluggy      String    @map("item_id_pluggy")
+  status            String
+  dataConsentimento DateTime  @default(now()) @map("data_consentimento")
+  dataExpiracao     DateTime? @map("data_expiracao")
+  dataRevogacao     DateTime? @map("data_revogacao")
+
+  usuario     Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  instituicao Instituicao     @relation(fields: [instituicaoId], references: [id])
+  contas      ContaBancaria[]
+
+  @@map("consentimento")
+}
+
+model ContaBancaria {
+  id                  Int       @id @default(autoincrement())
+  consentimentoId     Int       @map("consentimento_id")
+  idExternoPluggy     String    @unique @map("id_externo_pluggy")
+  tipo                String
+  numeroMascarado     String?   @map("numero_mascarado")
+  saldoAtual          Decimal   @default(0) @map("saldo_atual") @db.Decimal(15, 2)
+  moeda               String    @default("BRL")
+  ultimaSincronizacao DateTime? @map("ultima_sincronizacao")
+
+  consentimento Consentimento @relation(fields: [consentimentoId], references: [id], onDelete: Cascade)
+  transacoes    Transacao[]
+
+  @@map("conta_bancaria")
+}
+
+model Categoria {
+  id            Int     @id @default(autoincrement())
+  usuarioId     Int?    @map("usuario_id")
+  nome          String
+  tipo          String
+  icone         String?
+  padraoSistema Boolean @default(false) @map("padrao_sistema")
+
+  usuario    Usuario?      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  transacoes Transacao[]
+  regras     RegraAlerta[]
+
+  @@map("categoria")
+}
+
+model Transacao {
+  id                           Int      @id @default(autoincrement())
+  contaId                      Int      @map("conta_id")
+  categoriaId                  Int?     @map("categoria_id")
+  idExternoPluggy              String   @unique @map("id_externo_pluggy")
+  descricao                    String
+  valor                        Decimal  @db.Decimal(15, 2)
+  tipo                         String
+  data                         DateTime
+  metodoPagamento              String?  @map("metodo_pagamento")
+  categoriaAjustadaManualmente Boolean  @default(false) @map("categoria_ajustada_manualmente")
+
+  conta        ContaBancaria @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  categoria    Categoria?    @relation(fields: [categoriaId], references: [id])
+  notificacoes Notificacao[]
+
+  @@index([contaId, data])
+  @@map("transacao")
+}
+
+model RegraAlerta {
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int      @map("usuario_id")
+  tipoEvento  String   @map("tipo_evento")
+  operador    String?
+  valorLimite Decimal? @map("valor_limite") @db.Decimal(15, 2)
+  categoriaId Int?     @map("categoria_id")
+  canal       String
+  ativa       Boolean  @default(true)
+  dataCriacao DateTime @default(now()) @map("data_criacao")
+
+  usuario      Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  categoria    Categoria?    @relation(fields: [categoriaId], references: [id])
+  notificacoes Notificacao[]
+
+  @@map("regra_alerta")
+}
+
+model Notificacao {
+  id          Int       @id @default(autoincrement())
+  regraId     Int       @map("regra_id")
+  transacaoId Int?      @map("transacao_id")
+  mensagem    String
+  canal       String
+  statusEnvio String    @map("status_envio")
+  dataEnvio   DateTime? @map("data_envio")
+  lida        Boolean   @default(false)
+
+  regra     RegraAlerta @relation(fields: [regraId], references: [id], onDelete: Cascade)
+  transacao Transacao?  @relation(fields: [transacaoId], references: [id])
+
+  @@unique([regraId, transacaoId])
+  @@map("notificacao")
+}
+
+model LogAuditoria {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int      @map("usuario_id")
+  acao      String
+  recurso   String
+  ip        String?
+  dataHora  DateTime @default(now()) @map("data_hora")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("log_auditoria")
+}
