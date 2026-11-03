@@ -24,6 +24,7 @@ model Usuario {
   categorias     Categoria[]
   regras         RegraAlerta[]
   logs           LogAuditoria[]
+  Sessao         Sessao[]
 
   @@map("usuario")
 }
@@ -177,4 +178,17 @@ model LogAuditoria {
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@map("log_auditoria")
+}
+
+model Sessao {
+  id          String   @id @default(uuid())
+  usuarioId   Int      @map("usuario_id")
+  refreshHash String   @unique @map("refresh_hash")
+  expiraEm    DateTime @map("expira_em")
+  revogada    Boolean  @default(false)
+  criadoEm    DateTime @default(now()) @map("criado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("sessao")
 }
