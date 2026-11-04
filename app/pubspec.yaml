@@ -1,0 +1,44 @@
+name: finance_control
+description: "Assistente Financeiro Pessoal com Open Finance e Interface por Voz"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Estado (MVVM)
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # HTTP
+  dio: ^5.7.0
+
+  # Armazenamento seguro de tokens
+  flutter_secure_storage: ^9.2.2
+
+  # Cache offline (SQLite)
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+
+  # Biometria
+  local_auth: ^2.3.0
+
+  # Gráficos (pós-MVP RF09)
+  fl_chart: ^0.68.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.4.3
+  custom_lint: ^0.7.6
+  riverpod_lint: ^2.6.3
+
+flutter:
+  uses-material-design: true

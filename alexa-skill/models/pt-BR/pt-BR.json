@@ -1,0 +1,55 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "finance control",
+      "intents": [
+        {
+          "name": "ConsultarSaldoIntent",
+          "slots": [],
+          "samples": [
+            "qual é meu saldo",
+            "quanto tenho na conta",
+            "meu saldo atual",
+            "qual o meu saldo",
+            "me diz meu saldo"
+          ]
+        },
+        {
+          "name": "ConsultarGastosIntent",
+          "slots": [],
+          "samples": [
+            "quanto gastei esse mês",
+            "meus gastos do mês",
+            "resumo de gastos",
+            "quanto gastei em {mes}",
+            "meus gastos de {mes}"
+          ]
+        },
+        {
+          "name": "ConsultarFinancasIntent",
+          "slots": [],
+          "samples": [
+            "como estão minhas finanças",
+            "resumo financeiro",
+            "minha situação financeira",
+            "como está minha conta",
+            "o que tenho disponível"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent"
+        },
+        {
+          "name": "AMAZON.CancelIntent"
+        },
+        {
+          "name": "AMAZON.StopIntent"
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent"
+        }
+      ],
+      "types": []
+    }
+  }
+}

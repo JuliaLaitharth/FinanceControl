@@ -13,7 +13,6 @@ export class AuditService {
         data: { usuarioId, acao, recurso, ip },
       });
     } catch (erro) {
-      // A auditoria nunca deve derrubar a requisição do usuário.
       this.logger.error(`Falha ao registrar auditoria (${acao})`, (erro as Error).stack);
     }
   }
