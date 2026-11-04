@@ -1,13 +1,14 @@
 import { HandlerInput, RequestHandler } from 'ask-sdk-core';
 import { Response } from 'ask-sdk-model';
+import { FinanceApiService } from '../services/finance-api.service';
 
 export const LaunchRequestHandler: RequestHandler = {
   canHandle(input: HandlerInput): boolean {
     return input.requestEnvelope.request.type === 'LaunchRequest';
   },
 
-  handle(input: HandlerInput): Response {
-    const { accessToken } = input.requestEnvelope.context.System.user;
+  async handle(input: HandlerInput): Promise<Response> {
+    const { accessToken, userId } = input.requestEnvelope.context.System.user;
 
     if (!accessToken) {
       return input.responseBuilder
@@ -18,6 +19,12 @@ export const LaunchRequestHandler: RequestHandler = {
         .withLinkAccountCard()
         .getResponse();
     }
+
+    // Registra o Alexa User ID no backend para habilitar Proactive Events (melhor esforço)
+    try {
+      const api = new FinanceApiService(accessToken);
+      await api.registrarAlexaId(userId);
+    } catch { /* não crítico */ }
 
     return input.responseBuilder
       .speak(

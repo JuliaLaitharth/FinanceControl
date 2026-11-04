@@ -21,6 +21,7 @@ model Usuario {
 
   tokens         TokenRecuperacao[]
   vinculosAlexa  VinculoAlexa[]
+  codigosOauth   CodigoOAuth[]
   consentimentos Consentimento[]
   categorias     Categoria[]
   regras         RegraAlerta[]
@@ -44,7 +45,7 @@ model TokenRecuperacao {
 model VinculoAlexa {
   id           Int      @id @default(autoincrement())
   usuarioId    Int      @map("usuario_id")
-  alexaUserId  String   @map("alexa_user_id")
+  alexaUserId  String?  @map("alexa_user_id")
   accessToken  String   @map("access_token")
   refreshToken String   @map("refresh_token")
   expiraEm     DateTime @map("expira_em")
@@ -53,6 +54,19 @@ model VinculoAlexa {
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@map("vinculo_alexa")
+}
+
+model CodigoOAuth {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  usuarioId   Int      @map("usuario_id")
+  redirectUri String   @map("redirect_uri")
+  expiraEm    DateTime @map("expira_em")
+  usado       Boolean  @default(false)
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("codigo_oauth")
 }
 
 model Instituicao {

@@ -1,0 +1,50 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "pt-BR": {
+          "name": "FinanceControl",
+          "summary": "Consulte saldo e gastos via Alexa.",
+          "description": "Skill para o aplicativo FinanceControl com Open Finance. Consulte saldo consolidado, gastos por categoria e receba alertas de transações.",
+          "examplePhrases": [
+            "Alexa, abre finance control",
+            "Alexa, pergunta pro finance control qual é meu saldo",
+            "Alexa, pergunta pro finance control quanto gastei esse mês"
+          ],
+          "keywords": ["finanças", "saldo", "gastos", "open finance", "banco"]
+        }
+      },
+      "isAvailableWorldwide": false,
+      "testingInstructions": "Vincule a conta antes de usar. Necessário ter cadastro no app FinanceControl.",
+      "category": "FINANCE",
+      "distributionCountries": ["BR"]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:ACCOUNT_ID:function:FinanceControlSkill"
+        }
+      }
+    },
+    "permissions": [
+      { "name": "alexa::proactive_events" }
+    ],
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "privacyPolicyUrl": "https://financecontrol.example.com/privacidade"
+    },
+    "accountLinking": {
+      "accountLinkingType": "AUTH_CODE",
+      "authorizationUrl": "https://api.financecontrol.example.com/oauth/authorize",
+      "accessTokenUrl": "https://api.financecontrol.example.com/oauth/token",
+      "clientId": "alexa-skill-client",
+      "scopes": ["profile"],
+      "accessTokenScheme": "HTTP_BASIC",
+      "skipOnEnablement": false
+    }
+  }
+}

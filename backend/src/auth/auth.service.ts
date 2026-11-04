@@ -224,6 +224,13 @@ export class AuthService {
     });
   }
 
+  async vincularAlexaId(usuarioId: number, alexaUserId: string): Promise<void> {
+    await this.prisma.vinculoAlexa.updateMany({
+      where: { usuarioId, ativo: true },
+      data: { alexaUserId },
+    });
+  }
+
   private async iniciarSessao(usuarioId: number) {
     const refreshToken = randomBytes(48).toString('hex');
     const sessao = await this.prisma.sessao.create({

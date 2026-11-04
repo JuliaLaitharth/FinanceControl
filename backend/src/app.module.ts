@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AlexaModule } from './alexa/alexa.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriaModule } from './categoria/categoria.module';
@@ -11,6 +12,7 @@ import { ContaModule } from './conta/conta.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { FcmModule } from './fcm/fcm.module';
 import { NotificacaoModule } from './notificacao/notificacao.module';
+import { OauthModule } from './oauth/oauth.module';
 import { PluggyModule } from './pluggy/pluggy.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RegraAlertaModule } from './regra-alerta/regra-alerta.module';
@@ -34,6 +36,7 @@ import { WorkerModule } from './worker/worker.module';
     EncryptionModule,
     AuditModule,
     FcmModule,
+    AlexaModule,
     AuthModule,
     PluggyModule,
     ConsentimentoModule,
@@ -43,6 +46,7 @@ import { WorkerModule } from './worker/worker.module';
     TransacaoModule,
     RegraAlertaModule,
     NotificacaoModule,
+    OauthModule,
     WorkerModule,
   ],
   controllers: [AppController],

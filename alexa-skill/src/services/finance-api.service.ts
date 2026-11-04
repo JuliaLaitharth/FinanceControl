@@ -27,4 +27,12 @@ export class FinanceApiService {
     });
     return data;
   }
+
+  async registrarAlexaId(alexaUserId: string): Promise<void> {
+    await axios.patch(
+      `${API_BASE_URL}/auth/alexa-id`,
+      { alexaUserId },
+      { headers: this.headers, timeout: 5000 },
+    );
+  }
 }

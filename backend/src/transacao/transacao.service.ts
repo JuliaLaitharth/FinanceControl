@@ -150,6 +150,37 @@ export class TransacaoService {
     return { sincronizadas };
   }
 
+  /** Resumo de gastos por categoria para a Alexa Skill (ConsultarGastosIntent). */
+  async resumoCategorias(
+    usuarioId: number,
+    dataInicio?: string,
+  ): Promise<{ categorias: Array<{ nome: string; total: number }> }> {
+    const inicio = dataInicio
+      ? new Date(dataInicio)
+      : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+    const transacoes = await this.prisma.transacao.findMany({
+      where: {
+        conta: { consentimento: { usuarioId, status: 'ATIVO' } },
+        tipo: 'DEBIT',
+        data: { gte: inicio },
+      },
+      include: { categoria: { select: { nome: true } } },
+    });
+
+    const mapa: Record<string, number> = {};
+    for (const tx of transacoes) {
+      const nome = tx.categoria?.nome ?? 'Outros';
+      mapa[nome] = (mapa[nome] ?? 0) + Number(tx.valor);
+    }
+
+    const categorias = Object.entries(mapa)
+      .map(([nome, total]) => ({ nome, total: Math.round(total * 100) / 100 }))
+      .sort((a, b) => b.total - a.total);
+
+    return { categorias };
+  }
+
   private categorizarAuto(
     descricao: string,
     categorias: Array<{ id: number; nome: string }>,

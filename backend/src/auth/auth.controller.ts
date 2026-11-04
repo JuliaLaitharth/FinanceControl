@@ -14,6 +14,11 @@ class FcmTokenDto {
   token!: string;
 }
 
+class AlexaIdDto {
+  @IsString()
+  alexaUserId!: string;
+}
+
 interface AuthRequest {
   user: { userId: number; sessaoId: string };
 }
@@ -75,5 +80,12 @@ export class AuthController {
   @HttpCode(204)
   registrarFcmToken(@Req() req: AuthRequest, @Body() dto: FcmTokenDto) {
     return this.auth.registrarFcmToken(req.user.userId, dto.token);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('alexa-id')
+  @HttpCode(204)
+  async vincularAlexaId(@Req() req: AuthRequest, @Body() dto: AlexaIdDto) {
+    await this.auth.vincularAlexaId(req.user.userId, dto.alexaUserId);
   }
 }

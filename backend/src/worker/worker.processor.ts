@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
+import { AlexaService } from '../alexa/alexa.service.js';
 import { FcmService } from '../fcm/fcm.service.js';
 import { NotificacaoService } from '../notificacao/notificacao.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -25,6 +26,7 @@ export class SyncWorkerProcessor extends WorkerHost {
     private readonly transacaoService: TransacaoService,
     private readonly notificacaoService: NotificacaoService,
     private readonly fcmService: FcmService,
+    private readonly alexaService: AlexaService,
   ) {
     super();
   }
@@ -91,6 +93,10 @@ export class SyncWorkerProcessor extends WorkerHost {
               enviado ? 'ENVIADO' : 'FALHA',
               new Date(),
             );
+          }
+
+          if (notif) {
+            await this.alexaService.enviarAlertaTransacao(usuarioId, notif.mensagem);
           }
         }
       }

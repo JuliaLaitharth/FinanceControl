@@ -25,6 +25,14 @@ export class TransacaoController {
     return this.service.listar(req.user.sub, filtro);
   }
 
+  @Get('resumo-categorias')
+  resumoCategorias(
+    @Request() req: { user: { sub: number } },
+    @Query('dataInicio') dataInicio?: string,
+  ) {
+    return this.service.resumoCategorias(req.user.sub, dataInicio);
+  }
+
   @Post('sincronizar')
   @HttpCode(HttpStatus.OK)
   sincronizar(@Request() req: { user: { sub: number }; ip: string }) {
