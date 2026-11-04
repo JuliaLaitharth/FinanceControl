@@ -77,7 +77,7 @@ export class ConsentimentoService {
     // Busca e persiste as contas bancárias do item
     const contasPluggy = await this.pluggy.buscarContas(itemIdDecriptado);
     await this.prisma.contaBancaria.createMany({
-      data: contasPluggy.map((c) => ({
+      data: contasPluggy.map((c: (typeof contasPluggy)[number]) => ({
         consentimentoId: consentimento.id,
         idExternoPluggy: c.id,
         tipo: c.type,

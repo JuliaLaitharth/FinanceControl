@@ -8,7 +8,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { IsEmail, IsString } from 'class-validator';
 import { OauthService } from './oauth.service.js';
 

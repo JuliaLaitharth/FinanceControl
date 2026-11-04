@@ -35,7 +35,7 @@ export const createPrismaMock = (): DeepMockOf<PrismaService> =>
     categoria: makeTableMock(),
     regraAlerta: makeTableMock(),
     notificacao: makeTableMock(),
-    codigoOauth: makeTableMock(),
+    codigoOAuth: makeTableMock(),
     regraCategorizacao: makeTableMock(),
     instituicao: makeTableMock(),
     $transaction: jest.fn(),

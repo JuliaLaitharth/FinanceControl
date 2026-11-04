@@ -132,7 +132,7 @@ export class TransacaoService {
                 tipo: tx.type,
                 data: new Date(tx.date),
                 metodoPagamento: (tx as Record<string, unknown>)['paymentData']
-                  ? String((tx as Record<string, { paymentMethod?: string }>)['paymentData']?.paymentMethod ?? '')
+                  ? String(((tx as Record<string, unknown>)['paymentData'] as Record<string, unknown>)?.['paymentMethod'] ?? '')
                   : null,
                 categoriaId,
               },

@@ -51,7 +51,7 @@ export class WebhookController {
     // Encontra o usuário via SHA-256 do itemId
     if (rawItemId) {
       const itemIdHash = createHash('sha256').update(rawItemId).digest('hex');
-      const consentimento = await this.prisma.consentimento.findUnique({
+      const consentimento = await this.prisma.consentimento.findFirst({
         where: { itemIdHash },
         select: { usuarioId: true },
       });

@@ -75,10 +75,10 @@ describe('OauthService', () => {
 
   describe('gerarCodigo()', () => {
     it('cria registro e retorna string de 64 chars hex', async () => {
-      prisma.codigoOauth.create.mockResolvedValue(codigoFake() as never);
+      prisma.codigoOAuth.create.mockResolvedValue(codigoFake() as never);
       const code = await service.gerarCodigo(1, 'https://amazon.com/callback');
       expect(code).toHaveLength(64);
-      expect(prisma.codigoOauth.create).toHaveBeenCalledWith(
+      expect(prisma.codigoOAuth.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ usuarioId: 1 }),
         }),
@@ -90,8 +90,8 @@ describe('OauthService', () => {
 
   describe('trocarCodigo()', () => {
     it('troca código válido por tokens OAuth', async () => {
-      prisma.codigoOauth.findUnique.mockResolvedValue(codigoFake() as never);
-      prisma.codigoOauth.update.mockResolvedValue(codigoFake({ usado: true }) as never);
+      prisma.codigoOAuth.findUnique.mockResolvedValue(codigoFake() as never);
+      prisma.codigoOAuth.update.mockResolvedValue(codigoFake({ usado: true }) as never);
       prisma.vinculoAlexa.create.mockResolvedValue(vinculoFake() as never);
 
       const result = await service.trocarCodigo('abc123', 'https://amazon.com/callback');
@@ -99,20 +99,20 @@ describe('OauthService', () => {
       expect(result.access_token).toBe('jwt-access-token');
       expect(result.token_type).toBe('Bearer');
       expect(typeof result.refresh_token).toBe('string');
-      expect(prisma.codigoOauth.update).toHaveBeenCalledWith(
+      expect(prisma.codigoOAuth.update).toHaveBeenCalledWith(
         expect.objectContaining({ data: { usado: true } }),
       );
     });
 
     it('lança UnauthorizedException para código já usado', async () => {
-      prisma.codigoOauth.findUnique.mockResolvedValue(codigoFake({ usado: true }) as never);
+      prisma.codigoOAuth.findUnique.mockResolvedValue(codigoFake({ usado: true }) as never);
       await expect(service.trocarCodigo('abc123', 'https://amazon.com/callback')).rejects.toThrow(
         UnauthorizedException,
       );
     });
 
     it('lança UnauthorizedException para código expirado', async () => {
-      prisma.codigoOauth.findUnique.mockResolvedValue(
+      prisma.codigoOAuth.findUnique.mockResolvedValue(
         codigoFake({ expiraEm: new Date(Date.now() - 1000) }) as never,
       );
       await expect(service.trocarCodigo('abc123', 'https://amazon.com/callback')).rejects.toThrow(
@@ -121,7 +121,7 @@ describe('OauthService', () => {
     });
 
     it('lança UnauthorizedException quando redirect_uri não corresponde', async () => {
-      prisma.codigoOauth.findUnique.mockResolvedValue(codigoFake() as never);
+      prisma.codigoOAuth.findUnique.mockResolvedValue(codigoFake() as never);
       await expect(
         service.trocarCodigo('abc123', 'https://outro.com/callback'),
       ).rejects.toThrow(UnauthorizedException);

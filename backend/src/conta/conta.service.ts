@@ -25,13 +25,15 @@ export class ContaService {
       },
     });
 
-    const total = contas.reduce((acc, c) => acc + Number(c.saldoAtual), 0);
+    type Conta = (typeof contas)[number];
+
+    const total = contas.reduce((acc: number, c: Conta) => acc + Number(c.saldoAtual), 0);
 
     // Agrupa por instituição
     const porInstituicao = Object.values(
       contas.reduce<
         Record<string, { nome: string; logoUrl: string | null; saldo: number }>
-      >((acc, c) => {
+      >((acc: Record<string, { nome: string; logoUrl: string | null; saldo: number }>, c: Conta) => {
         const { nome, logoUrl } = c.consentimento.instituicao;
         if (!acc[nome]) acc[nome] = { nome, logoUrl: logoUrl ?? null, saldo: 0 };
         acc[nome].saldo += Number(c.saldoAtual);
@@ -40,7 +42,7 @@ export class ContaService {
     );
 
     const ultimaSincronizacao =
-      contas.reduce<Date | null>((latest, c) => {
+      contas.reduce<Date | null>((latest: Date | null, c: Conta) => {
         if (!c.ultimaSincronizacao) return latest;
         return !latest || c.ultimaSincronizacao > latest ? c.ultimaSincronizacao : latest;
       }, null);

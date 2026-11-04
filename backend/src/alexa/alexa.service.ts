@@ -20,7 +20,7 @@ export class AlexaService {
     if (!this.clientId || !this.clientSecret) return;
 
     const vinculo = await this.prisma.vinculoAlexa.findFirst({
-      where: { usuarioId, ativo: true, alexaUserId: { not: null } },
+      where: { usuarioId, ativo: true, NOT: { alexaUserId: null } },
     });
     if (!vinculo?.alexaUserId) return;
 

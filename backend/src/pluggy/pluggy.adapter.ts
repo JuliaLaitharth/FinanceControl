@@ -17,7 +17,7 @@ export class PluggyAdapter {
   /** Gera um connect token para abrir o widget no app (válido por 30 min). */
   async criarConnectToken(itemId?: string): Promise<string> {
     try {
-      const { accessToken } = await this.client.createConnectToken(itemId ?? null, {
+      const { accessToken } = await this.client.createConnectToken(itemId ?? undefined, {
         // Restringe aos escopos de consulta (read-only — RNF01)
         products: ['ACCOUNTS', 'TRANSACTIONS', 'IDENTITY', 'INCOME_REPORTS'],
       });

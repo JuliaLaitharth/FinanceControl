@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, Ip, MaxLength, MinLength, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Ip, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { LgpdService } from '../lgpd/lgpd.service';
-import { IsString } from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 import { AuthService } from './auth.service';
 import { BiometriaDto } from './dto/biometria.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';

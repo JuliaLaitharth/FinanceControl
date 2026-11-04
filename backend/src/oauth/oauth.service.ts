@@ -29,14 +29,14 @@ export class OauthService {
 
   async gerarCodigo(usuarioId: number, redirectUri: string): Promise<string> {
     const codigo = randomBytes(32).toString('hex');
-    await this.prisma.codigoOauth.create({
+    await this.prisma.codigoOAuth.create({
       data: { codigo, usuarioId, redirectUri, expiraEm: emMinutos(CODIGO_MINUTOS) },
     });
     return codigo;
   }
 
   async trocarCodigo(code: string, redirectUri: string) {
-    const registro = await this.prisma.codigoOauth.findUnique({ where: { codigo: code } });
+    const registro = await this.prisma.codigoOAuth.findUnique({ where: { codigo: code } });
     if (!registro || registro.usado || registro.expiraEm < new Date()) {
       throw new UnauthorizedException('Código inválido ou expirado');
     }
@@ -44,7 +44,7 @@ export class OauthService {
       throw new UnauthorizedException('redirect_uri não corresponde');
     }
 
-    await this.prisma.codigoOauth.update({ where: { id: registro.id }, data: { usado: true } });
+    await this.prisma.codigoOAuth.update({ where: { id: registro.id }, data: { usado: true } });
 
     const accessToken = await this.jwt.signAsync(
       { sub: registro.usuarioId, scope: 'alexa' },
@@ -56,7 +56,6 @@ export class OauthService {
     await this.prisma.vinculoAlexa.create({
       data: {
         usuarioId: registro.usuarioId,
-        alexaUserId: null,
         accessToken,
         refreshToken,
         expiraEm,

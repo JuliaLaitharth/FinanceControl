@@ -175,7 +175,7 @@ export class AuthService {
 
     const senhaHash = await bcrypt.hash(dto.novaSenha, BCRYPT_ROUNDS);
 
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Uso único: só um pedido consegue marcar o token como usado.
       const marcado = await tx.tokenRecuperacao.updateMany({
         where: { id: registro.id, usado: false },
@@ -239,7 +239,7 @@ export class AuthService {
     if (!ok) throw new UnauthorizedException('Senha atual incorreta');
 
     const senhaHash = await bcrypt.hash(novaSenha, BCRYPT_ROUNDS);
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.usuario.update({ where: { id: usuarioId }, data: { senhaHash } });
       await tx.sessao.updateMany({ where: { usuarioId, revogada: false }, data: { revogada: true } });
     });
