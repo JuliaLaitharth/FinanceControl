@@ -1,0 +1,530 @@
+{
+  "info": {
+    "name": "FinanceControl API",
+    "_postman_id": "fc-dvp-v3-upf-2026",
+    "description": "Coleção completa da API FinanceControl — DVP v3.0 — Universidade de Passo Fundo.\n\nConfigure as variáveis de ambiente:\n- `baseUrl`: URL base da API (ex: http://localhost:3000)\n- `accessToken`: preenchido automaticamente pelo script de login\n- `refreshToken`: preenchido automaticamente pelo script de login",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Cadastro",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Julia Teste\",\n  \"email\": \"julia@exemplo.com\",\n  \"senha\": \"Senha@123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const d = pm.response.json();",
+                "pm.collectionVariables.set('accessToken', d.accessToken);",
+                "pm.collectionVariables.set('refreshToken', d.refreshToken);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"julia@exemplo.com\",\n  \"senha\": \"Senha@123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const d = pm.response.json();",
+                "pm.collectionVariables.set('accessToken', d.accessToken);",
+                "pm.collectionVariables.set('refreshToken', d.refreshToken);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Renovar Token",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Meus Dados",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Atualizar Perfil",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/perfil",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Julia Atualizada\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Alterar Senha",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/senha",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senhaAtual\": \"Senha@123\",\n  \"novaSenha\": \"NovaSenha@456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Toggle Biometria",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/biometria",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ativa\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Esqueci a Senha",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"julia@exemplo.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Redefinir Senha",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/reset-password",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"TOKEN_DO_EMAIL\",\n  \"novaSenha\": \"NovaSenha@789\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Excluir Conta (LGPD)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/auth/conta",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consentimentos",
+      "item": [
+        {
+          "name": "Listar Consentimentos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/consentimentos",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Criar Consentimento",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/consentimentos",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": \"PLUGGY_ITEM_ID\",\n  \"instituicaoNome\": \"Banco Itaú\",\n  \"instituicaoLogo\": \"https://cdn.pluggy.ai/assets/connector-icons/itau.png\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Revogar Consentimento",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/consentimentos/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contas",
+      "item": [
+        {
+          "name": "Listar Contas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/contas",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Saldo Consolidado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/contas/saldo",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transações",
+      "item": [
+        {
+          "name": "Listar Transações",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/transacoes?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["transacoes"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "de", "value": "2026-10-01", "disabled": true },
+                { "key": "ate", "value": "2026-10-31", "disabled": true },
+                { "key": "tipo", "value": "DEBIT", "disabled": true },
+                { "key": "categoriaId", "value": "1", "disabled": true }
+              ]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Sincronizar",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transacoes/sincronizar",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Resumo por Categorias",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transacoes/resumo-categorias",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Resumo Mensal",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/transacoes/resumo-mensal?meses=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["transacoes", "resumo-mensal"],
+              "query": [{ "key": "meses", "value": "6" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Ajustar Categoria",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/transacoes/1/categoria",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoriaId\": 3\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categorias",
+      "item": [
+        {
+          "name": "Listar Categorias",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categorias",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regras de Categorização",
+      "item": [
+        {
+          "name": "Listar Regras",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/regras-categorizacao",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Criar Regra",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/regras-categorizacao",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"palavra\": \"academia\",\n  \"categoriaId\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Excluir Regra",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/regras-categorizacao/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regras de Alerta",
+      "item": [
+        {
+          "name": "Listar Regras",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/regras-alerta",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Criar Regra — Saldo Mínimo",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/regras-alerta",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoEvento\": \"SALDO_MINIMO\",\n  \"limiar\": 500.00,\n  \"contaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar Regra — Gasto por Categoria",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/regras-alerta",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoEvento\": \"GASTO_CATEGORIA\",\n  \"limiar\": 200.00,\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar Regra",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/regras-alerta/1",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limiar\": 300.00,\n  \"ativa\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Excluir Regra",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/regras-alerta/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificações",
+      "item": [
+        {
+          "name": "Listar Notificações",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notificacoes",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Marcar como Lida",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/notificacoes/1/lida",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Registrar Token FCM",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/fcm-token",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"FCM_DEVICE_TOKEN\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OAuth (Alexa Account Linking)",
+      "item": [
+        {
+          "name": "Authorize — Página HTML",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/oauth/authorize?redirect_uri=https://layla.amazon.com/api/skill/link/SKILL_ID&state=STATE&client_id=alexa-skill",
+              "host": ["{{baseUrl}}"],
+              "path": ["oauth", "authorize"],
+              "query": [
+                { "key": "redirect_uri", "value": "https://layla.amazon.com/api/skill/link/SKILL_ID" },
+                { "key": "state", "value": "STATE" },
+                { "key": "client_id", "value": "alexa-skill" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Authorize — POST (login + gerar code)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/oauth/authorize",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"julia@exemplo.com\",\n  \"senha\": \"Senha@123\",\n  \"redirectUri\": \"https://layla.amazon.com/api/skill/link/SKILL_ID\",\n  \"state\": \"STATE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Token — Trocar code",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/oauth/token",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "authorization_code" },
+                { "key": "code", "value": "CODE_DO_AUTHORIZE" },
+                { "key": "redirect_uri", "value": "https://layla.amazon.com/api/skill/link/SKILL_ID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Token — Refresh",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/oauth/token",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "refresh_token" },
+                { "key": "refresh_token", "value": "REFRESH_TOKEN_ALEXA" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook",
+      "item": [
+        {
+          "name": "Pluggy Webhook (simulado)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/webhooks/pluggy",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-pluggy-signature", "value": "sha256=ASSINATURA_HMAC" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"item/updated\",\n  \"data\": {\n    \"itemId\": \"PLUGGY_ITEM_ID\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
