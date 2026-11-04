@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, Ip, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Ip, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { LgpdService } from '../lgpd/lgpd.service';
 import { IsString } from 'class-validator';
 import { AuthService } from './auth.service';
 import { BiometriaDto } from './dto/biometria.dto';
@@ -25,7 +26,10 @@ interface AuthRequest {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly lgpd: LgpdService,
+  ) {}
 
   @Post('register')
   register(@Body() dto: RegisterDto, @Ip() ip: string) {
@@ -87,5 +91,12 @@ export class AuthController {
   @HttpCode(204)
   async vincularAlexaId(@Req() req: AuthRequest, @Body() dto: AlexaIdDto) {
     await this.auth.vincularAlexaId(req.user.userId, dto.alexaUserId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('conta')
+  @HttpCode(204)
+  async excluirConta(@Req() req: AuthRequest, @Ip() ip: string) {
+    await this.lgpd.excluirConta(req.user.userId, ip);
   }
 }

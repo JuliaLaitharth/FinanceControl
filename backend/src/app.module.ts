@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AlexaModule } from './alexa/alexa.module';
 import { AuditModule } from './audit/audit.module';
+import { LgpdModule } from './lgpd/lgpd.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { ConsentimentoModule } from './consentimento/consentimento.module';
@@ -13,6 +14,7 @@ import { EncryptionModule } from './encryption/encryption.module';
 import { FcmModule } from './fcm/fcm.module';
 import { NotificacaoModule } from './notificacao/notificacao.module';
 import { OauthModule } from './oauth/oauth.module';
+import { RegraCategorizacaoModule } from './regra-categorizacao/regra-categorizacao.module';
 import { PluggyModule } from './pluggy/pluggy.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RegraAlertaModule } from './regra-alerta/regra-alerta.module';
@@ -47,6 +49,8 @@ import { WorkerModule } from './worker/worker.module';
     RegraAlertaModule,
     NotificacaoModule,
     OauthModule,
+    LgpdModule,
+    RegraCategorizacaoModule,
     WorkerModule,
   ],
   controllers: [AppController],

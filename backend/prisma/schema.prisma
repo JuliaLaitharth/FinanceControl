@@ -19,14 +19,15 @@ model Usuario {
   bloqueadoAte     DateTime? @map("bloqueado_ate")
   fcmToken         String?   @map("fcm_token")
 
-  tokens         TokenRecuperacao[]
-  vinculosAlexa  VinculoAlexa[]
-  codigosOauth   CodigoOAuth[]
-  consentimentos Consentimento[]
-  categorias     Categoria[]
-  regras         RegraAlerta[]
-  logs           LogAuditoria[]
-  Sessao         Sessao[]
+  tokens              TokenRecuperacao[]
+  vinculosAlexa       VinculoAlexa[]
+  codigosOauth        CodigoOAuth[]
+  consentimentos      Consentimento[]
+  categorias          Categoria[]
+  regras              RegraAlerta[]
+  regrasCategorizacao RegraCategorizacao[]
+  logs                LogAuditoria[]
+  Sessao              Sessao[]
 
   @@map("usuario")
 }
@@ -121,9 +122,10 @@ model Categoria {
   icone         String?
   padraoSistema Boolean @default(false) @map("padrao_sistema")
 
-  usuario    Usuario?      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  transacoes Transacao[]
-  regras     RegraAlerta[]
+  usuario             Usuario?             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  transacoes          Transacao[]
+  regras              RegraAlerta[]
+  regrasCategorizacao RegraCategorizacao[]
 
   @@map("categoria")
 }
@@ -181,6 +183,19 @@ model Notificacao {
 
   @@unique([regraId, transacaoId])
   @@map("notificacao")
+}
+
+model RegraCategorizacao {
+  id          Int    @id @default(autoincrement())
+  usuarioId   Int    @map("usuario_id")
+  palavra     String
+  categoriaId Int    @map("categoria_id")
+
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  categoria Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, palavra])
+  @@map("regra_categorizacao")
 }
 
 model LogAuditoria {

@@ -91,10 +91,16 @@ export class TransacaoService {
    * Aplica auto-categorização para transações novas.
    */
   async sincronizar(usuarioId: number, ip?: string): Promise<{ sincronizadas: number }> {
-    const categorias = await this.prisma.categoria.findMany({
-      where: { padraoSistema: true },
-      select: { id: true, nome: true },
-    });
+    const [categorias, regrasUsuario] = await Promise.all([
+      this.prisma.categoria.findMany({
+        where: { padraoSistema: true },
+        select: { id: true, nome: true },
+      }),
+      this.prisma.regraCategorizacao.findMany({
+        where: { usuarioId },
+        select: { palavra: true, categoriaId: true },
+      }),
+    ]);
 
     const consentimentos = await this.prisma.consentimento.findMany({
       where: { usuarioId, status: 'ATIVO' },
@@ -115,7 +121,7 @@ export class TransacaoService {
           );
 
           for (const tx of txs) {
-            const categoriaId = this.categorizarAuto(tx.description ?? '', categorias);
+            const categoriaId = this.categorizarAuto(tx.description ?? '', categorias, regrasUsuario);
             await this.prisma.transacao.upsert({
               where: { idExternoPluggy: tx.id },
               create: {
@@ -181,11 +187,37 @@ export class TransacaoService {
     return { categorias };
   }
 
+  /** Override manual de categoria (RF05): marca categoriaAjustadaManualmente = true. */
+  async ajustarCategoria(transacaoId: number, categoriaId: number, usuarioId: number) {
+    const tx = await this.prisma.transacao.findFirst({
+      where: {
+        id: transacaoId,
+        conta: { consentimento: { usuarioId, status: 'ATIVO' } },
+      },
+    });
+    if (!tx) {
+      const { NotFoundException } = await import('@nestjs/common');
+      throw new NotFoundException('Transação não encontrada');
+    }
+    return this.prisma.transacao.update({
+      where: { id: transacaoId },
+      data: { categoriaId, categoriaAjustadaManualmente: true },
+    });
+  }
+
   private categorizarAuto(
     descricao: string,
     categorias: Array<{ id: number; nome: string }>,
+    regrasUsuario: Array<{ palavra: string; categoriaId: number }> = [],
   ): number | null {
     const descNorm = normalizar(descricao);
+
+    // Regras do usuário têm prioridade sobre as palavras-chave do sistema
+    for (const regra of regrasUsuario) {
+      if (descNorm.includes(normalizar(regra.palavra))) {
+        return regra.categoriaId;
+      }
+    }
 
     for (const [nome, keywords] of Object.entries(KEYWORDS)) {
       if (keywords.some((kw) => descNorm.includes(kw))) {

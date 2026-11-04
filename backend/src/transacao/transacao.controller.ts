@@ -1,14 +1,25 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { IsInt, Min } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+
+class AjustarCategoriaDto {
+  @IsInt()
+  @Min(1)
+  categoriaId!: number;
+}
 import { FiltroTransacaoDto } from './dto/filtro-transacao.dto.js';
 import { TransacaoService } from './transacao.service.js';
 
@@ -31,6 +42,15 @@ export class TransacaoController {
     @Query('dataInicio') dataInicio?: string,
   ) {
     return this.service.resumoCategorias(req.user.sub, dataInicio);
+  }
+
+  @Patch(':id/categoria')
+  ajustarCategoria(
+    @Request() req: { user: { sub: number } },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AjustarCategoriaDto,
+  ) {
+    return this.service.ajustarCategoria(id, dto.categoriaId, req.user.sub);
   }
 
   @Post('sincronizar')

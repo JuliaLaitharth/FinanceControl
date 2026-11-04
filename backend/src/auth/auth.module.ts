@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { LgpdModule } from '../lgpd/lgpd.module';
 import { MailService } from '../mail/mail.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -17,6 +18,7 @@ import { JwtStrategy } from './jwt.strategy';
         signOptions: { expiresIn: 15 * 60 }, // access token: 15 minutos
       }),
     }),
+    LgpdModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, MailService],
