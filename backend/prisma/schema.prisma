@@ -57,7 +57,7 @@ model VinculoAlexa {
 model Instituicao {
   id             Int             @id @default(autoincrement())
   nome           String
-  codigoPluggy   String          @map("codigo_pluggy")
+  codigoPluggy   String          @unique @map("codigo_pluggy")
   logoUrl        String?         @map("logo_url")
   consentimentos Consentimento[]
 

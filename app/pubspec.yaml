@@ -28,6 +28,9 @@ dependencies:
   # Biometria
   local_auth: ^2.3.0
 
+  # WebView para Pluggy Connect Widget
+  webview_flutter: ^4.10.0
+
   # Gráficos (pós-MVP RF09)
   fl_chart: ^0.68.0
 

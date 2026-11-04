@@ -7,13 +7,13 @@ type DeepMockOf<T> = {
     : DeepMockOf<T[K]>;
 };
 
-// Tabelas usadas nos testes de autenticação
 const makeTableMock = () => ({
   findUnique: jest.fn(),
   findUniqueOrThrow: jest.fn(),
   findFirst: jest.fn(),
   findMany: jest.fn(),
   create: jest.fn(),
+  createMany: jest.fn(),
   update: jest.fn(),
   updateMany: jest.fn(),
   delete: jest.fn(),
