@@ -89,6 +89,53 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> toggleBiometria({required bool ativa}) async {
+    try {
+      final data = await _repo.setBiometria(ativa: ativa);
+      state = state.copyWith(usuario: data);
+    } catch (_) {}
+  }
+
+  Future<bool> atualizarNome(String nome) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final data = await _repo.atualizarPerfil(nome: nome);
+      state = state.copyWith(usuario: data, isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: _parseError(e), isLoading: false);
+      return false;
+    }
+  }
+
+  Future<bool> alterarSenha({
+    required String senhaAtual,
+    required String novaSenha,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _repo.alterarSenha(senhaAtual: senhaAtual, novaSenha: novaSenha);
+      state = state.copyWith(isLoading: false);
+      await logout();
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: _parseError(e), isLoading: false);
+      return false;
+    }
+  }
+
+  Future<bool> excluirConta() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _repo.excluirConta();
+      state = const AuthState(status: AuthStatus.unauthenticated);
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: _parseError(e), isLoading: false);
+      return false;
+    }
+  }
+
   String _parseError(Object e) {
     // Extrai mensagem de erro da API (DioException → response.data.message)
     try {

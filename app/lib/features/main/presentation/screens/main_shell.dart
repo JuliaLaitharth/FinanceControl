@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../accounts/presentation/screens/accounts_screen.dart';
+import '../../../auth/presentation/screens/profile_screen.dart';
+import '../../../dashboard/presentation/screens/dashboard_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../notifications/presentation/providers/notificacoes_provider.dart';
 import '../../../notifications/presentation/screens/notificacoes_screen.dart';
@@ -20,8 +21,9 @@ class _MainShellState extends ConsumerState<MainShell> {
   static const _screens = [
     HomeScreen(),
     TransacoesScreen(),
-    AccountsScreen(),
+    DashboardScreen(),
     NotificacoesScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -55,9 +57,9 @@ class _MainShellState extends ConsumerState<MainShell> {
             label: 'Transações',
           ),
           const NavigationDestination(
-            icon: Icon(Icons.account_balance_outlined),
-            selectedIcon: Icon(Icons.account_balance),
-            label: 'Contas',
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: 'Relatórios',
           ),
           NavigationDestination(
             icon: Badge(
@@ -71,6 +73,11 @@ class _MainShellState extends ConsumerState<MainShell> {
               child: const Icon(Icons.notifications),
             ),
             label: 'Alertas',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
       ),

@@ -36,6 +36,15 @@ export class TransacaoController {
     return this.service.listar(req.user.sub, filtro);
   }
 
+  @Get('resumo-mensal')
+  resumoMensal(
+    @Request() req: { user: { sub: number } },
+    @Query('meses') meses?: string,
+  ) {
+    const n = meses ? Math.min(Math.max(parseInt(meses) || 6, 1), 12) : 6;
+    return this.service.resumoMensal(req.user.sub, n);
+  }
+
   @Get('resumo-categorias')
   resumoCategorias(
     @Request() req: { user: { sub: number } },

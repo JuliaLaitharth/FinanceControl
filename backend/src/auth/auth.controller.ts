@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Ip, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Ip, MaxLength, MinLength, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { LgpdService } from '../lgpd/lgpd.service';
 import { IsString } from 'class-validator';
 import { AuthService } from './auth.service';
@@ -18,6 +18,22 @@ class FcmTokenDto {
 class AlexaIdDto {
   @IsString()
   alexaUserId!: string;
+}
+
+class AtualizarPerfilDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(80)
+  nome!: string;
+}
+
+class AlterarSenhaDto {
+  @IsString()
+  senhaAtual!: string;
+
+  @IsString()
+  @MinLength(8)
+  novaSenha!: string;
 }
 
 interface AuthRequest {
@@ -91,6 +107,19 @@ export class AuthController {
   @HttpCode(204)
   async vincularAlexaId(@Req() req: AuthRequest, @Body() dto: AlexaIdDto) {
     await this.auth.vincularAlexaId(req.user.userId, dto.alexaUserId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('perfil')
+  atualizarPerfil(@Req() req: AuthRequest, @Body() dto: AtualizarPerfilDto) {
+    return this.auth.atualizarPerfil(req.user.userId, dto.nome);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('senha')
+  @HttpCode(200)
+  alterarSenha(@Req() req: AuthRequest, @Body() dto: AlterarSenhaDto, @Ip() ip: string) {
+    return this.auth.alterarSenha(req.user.userId, dto.senhaAtual, dto.novaSenha, ip);
   }
 
   @UseGuards(JwtAuthGuard)

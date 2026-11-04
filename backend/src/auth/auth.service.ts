@@ -224,6 +224,30 @@ export class AuthService {
     });
   }
 
+  async atualizarPerfil(usuarioId: number, nome: string) {
+    const usuario = await this.prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { nome },
+    });
+    await this.audit.registrar(usuarioId, 'PERFIL_ATUALIZADO', 'usuario');
+    return this.publico(usuario);
+  }
+
+  async alterarSenha(usuarioId: number, senhaAtual: string, novaSenha: string, ip?: string) {
+    const usuario = await this.prisma.usuario.findUniqueOrThrow({ where: { id: usuarioId } });
+    const ok = await bcrypt.compare(senhaAtual, usuario.senhaHash);
+    if (!ok) throw new UnauthorizedException('Senha atual incorreta');
+
+    const senhaHash = await bcrypt.hash(novaSenha, BCRYPT_ROUNDS);
+    await this.prisma.$transaction(async (tx) => {
+      await tx.usuario.update({ where: { id: usuarioId }, data: { senhaHash } });
+      await tx.sessao.updateMany({ where: { usuarioId, revogada: false }, data: { revogada: true } });
+    });
+
+    await this.audit.registrar(usuarioId, 'SENHA_ALTERADA', 'usuario', ip);
+    return { mensagem: 'Senha alterada com sucesso. Faça login novamente.' };
+  }
+
   async vincularAlexaId(usuarioId: number, alexaUserId: string): Promise<void> {
     await this.prisma.vinculoAlexa.updateMany({
       where: { usuarioId, ativo: true },

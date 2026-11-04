@@ -156,6 +156,49 @@ export class TransacaoService {
     return { sincronizadas };
   }
 
+  /** Resumo mensal de receitas e despesas para o dashboard (RF09). */
+  async resumoMensal(
+    usuarioId: number,
+    meses: number = 6,
+  ): Promise<{ meses: Array<{ mes: string; receitas: number; despesas: number; saldo: number }> }> {
+    const agora = new Date();
+    const inicio = new Date(agora.getFullYear(), agora.getMonth() - (meses - 1), 1);
+
+    const transacoes = await this.prisma.transacao.findMany({
+      where: {
+        conta: { consentimento: { usuarioId, status: 'ATIVO' } },
+        data: { gte: inicio },
+      },
+      select: { valor: true, tipo: true, data: true },
+    });
+
+    // Inicializa todos os meses com zero
+    const mapa: Record<string, { receitas: number; despesas: number }> = {};
+    for (let i = meses - 1; i >= 0; i--) {
+      const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      mapa[key] = { receitas: 0, despesas: 0 };
+    }
+
+    for (const tx of transacoes) {
+      const key = `${tx.data.getFullYear()}-${String(tx.data.getMonth() + 1).padStart(2, '0')}`;
+      if (mapa[key]) {
+        const valor = Number(tx.valor);
+        if (tx.tipo === 'CREDIT') mapa[key].receitas += valor;
+        else mapa[key].despesas += valor;
+      }
+    }
+
+    const result = Object.entries(mapa).map(([mes, { receitas, despesas }]) => ({
+      mes,
+      receitas: Math.round(receitas * 100) / 100,
+      despesas: Math.round(despesas * 100) / 100,
+      saldo: Math.round((receitas - despesas) * 100) / 100,
+    }));
+
+    return { meses: result };
+  }
+
   /** Resumo de gastos por categoria para a Alexa Skill (ConsultarGastosIntent). */
   async resumoCategorias(
     usuarioId: number,

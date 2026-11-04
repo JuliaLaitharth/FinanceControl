@@ -80,4 +80,25 @@ class AuthRepository {
     final res = await _client.dio.patch('/auth/biometria', data: {'ativa': ativa});
     return res.data as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> atualizarPerfil({required String nome}) async {
+    final res = await _client.dio.patch('/auth/perfil', data: {'nome': nome});
+    return res.data as Map<String, dynamic>;
+  }
+
+  Future<void> alterarSenha({
+    required String senhaAtual,
+    required String novaSenha,
+  }) async {
+    await _client.dio.patch('/auth/senha', data: {
+      'senhaAtual': senhaAtual,
+      'novaSenha': novaSenha,
+    });
+  }
+
+  Future<void> excluirConta() async {
+    await _client.dio.delete('/auth/conta');
+    await ApiClient.clearTokens();
+    await LocalDatabase.limpar();
+  }
 }
