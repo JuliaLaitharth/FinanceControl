@@ -217,6 +217,13 @@ export class AuthService {
     return this.publico(usuario);
   }
 
+  async registrarFcmToken(usuarioId: number, token: string): Promise<void> {
+    await this.prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { fcmToken: token },
+    });
+  }
+
   private async iniciarSessao(usuarioId: number) {
     const refreshToken = randomBytes(48).toString('hex');
     const sessao = await this.prisma.sessao.create({

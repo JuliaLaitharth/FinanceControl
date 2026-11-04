@@ -4,6 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { AuditService } from '../audit/audit.service';
 import { EncryptionService } from '../encryption/encryption.service';
 import { PluggyAdapter } from '../pluggy/pluggy.adapter';
@@ -58,12 +59,16 @@ export class ConsentimentoService {
       },
     });
 
+    // SHA-256 do itemId para lookup rápido no webhook (não reversível)
+    const itemIdHash = createHash('sha256').update(itemIdDecriptado).digest('hex');
+
     // Cria o consentimento
     const consentimento = await this.prisma.consentimento.create({
       data: {
         usuarioId,
         instituicaoId: instituicao.id,
         itemIdPluggy: itemIdCriptografado,
+        itemIdHash,
         status: 'ATIVO',
         dataExpiracao: new Date(Date.now() + 365 * 86_400_000), // 1 ano
       },

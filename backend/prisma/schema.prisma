@@ -17,6 +17,7 @@ model Usuario {
   ultimoLogin      DateTime? @map("ultimo_login")
   tentativasFalhas Int       @default(0) @map("tentativas_falhas")
   bloqueadoAte     DateTime? @map("bloqueado_ate")
+  fcmToken         String?   @map("fcm_token")
 
   tokens         TokenRecuperacao[]
   vinculosAlexa  VinculoAlexa[]
@@ -69,6 +70,7 @@ model Consentimento {
   usuarioId         Int       @map("usuario_id")
   instituicaoId     Int       @map("instituicao_id")
   itemIdPluggy      String    @map("item_id_pluggy")
+  itemIdHash        String?   @unique @map("item_id_hash")
   status            String
   dataConsentimento DateTime  @default(now()) @map("data_consentimento")
   dataExpiracao     DateTime? @map("data_expiracao")

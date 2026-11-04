@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, Ip, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { IsString } from 'class-validator';
 import { AuthService } from './auth.service';
 import { BiometriaDto } from './dto/biometria.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -7,6 +8,11 @@ import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+
+class FcmTokenDto {
+  @IsString()
+  token!: string;
+}
 
 interface AuthRequest {
   user: { userId: number; sessaoId: string };
@@ -62,5 +68,12 @@ export class AuthController {
   @Get('me')
   me(@Req() req: AuthRequest) {
     return this.auth.me(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('fcm-token')
+  @HttpCode(204)
+  registrarFcmToken(@Req() req: AuthRequest, @Body() dto: FcmTokenDto) {
+    return this.auth.registrarFcmToken(req.user.userId, dto.token);
   }
 }
