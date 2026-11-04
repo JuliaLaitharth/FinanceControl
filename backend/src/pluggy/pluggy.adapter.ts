@@ -5,13 +5,23 @@ import { PluggyClient } from 'pluggy-sdk';
 @Injectable()
 export class PluggyAdapter {
   private readonly logger = new Logger(PluggyAdapter.name);
-  private client: PluggyClient;
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private _client: PluggyClient | null = null;
 
   constructor(config: ConfigService) {
-    this.client = new PluggyClient({
-      clientId: config.getOrThrow<string>('PLUGGY_CLIENT_ID'),
-      clientSecret: config.getOrThrow<string>('PLUGGY_CLIENT_SECRET'),
-    });
+    this.clientId = config.getOrThrow<string>('PLUGGY_CLIENT_ID');
+    this.clientSecret = config.getOrThrow<string>('PLUGGY_CLIENT_SECRET');
+  }
+
+  private get client(): PluggyClient {
+    if (!this._client) {
+      this._client = new PluggyClient({
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
+      });
+    }
+    return this._client;
   }
 
   /** Gera um connect token para abrir o widget no app (válido por 30 min). */
